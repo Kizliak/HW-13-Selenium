@@ -204,10 +204,6 @@ namespace HW_13_Selenium
 
             driver.SwitchTo().DefaultContent();
 
-            IWebElement popupWindow = wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"resend-email__root\"]")));
-            popupWindow.Click();
-            action.SendKeys(Keys.Escape).Perform();
-
             wait.Until(ExpectedConditions.ElementExists(By.CssSelector("common-input[class=\"stripe-card-view__cvv ng-untouched ng-pristine\"]")));
             var submitButtons = driver.FindElements(By.CssSelector("button[class=\"button button_type_default\""));
             bool cardAdded = false;
@@ -220,7 +216,7 @@ namespace HW_13_Selenium
                 }
             }
 
-            Thread.Sleep(1500);
+            Thread.Sleep(2500);
             Assert.IsTrue(cardAdded);
         }
 

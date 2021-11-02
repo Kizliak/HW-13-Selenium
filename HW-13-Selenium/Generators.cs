@@ -87,7 +87,7 @@ namespace HW_13_Selenium
             int expMonth = rnd.Next(1, 12);
             int expYear = rnd.Next(22, 27);
 
-            return (cards[cardNumber], expMonth.ToString() + expYear.ToString(), cvv.ToString());
+            return ("5112-5581-8335-7244", "05" + "25", cvv.ToString());
         }
     }
 }
