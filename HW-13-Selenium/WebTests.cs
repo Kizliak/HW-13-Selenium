@@ -8,6 +8,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 
 
 //Покрыть основными тестами данный сайт используя Selenium, с учетом техник тест дизайна и т.д. https://newbookmodels.com/ 
@@ -57,7 +58,7 @@ namespace HW_13_Selenium
 
             IWebElement firstNameField = driver.FindElement(By.CssSelector("input[name=\"first_name\"]"));
             firstNameField.SendKeys(firstname);
-
+            
             IWebElement lastNameField = driver.FindElement(By.CssSelector("input[name=\"last_name\"]"));
             lastNameField.SendKeys(secondname);
 
@@ -99,9 +100,6 @@ namespace HW_13_Selenium
             //action.MoveToElement(addressDropDownItem);
             //action.Perform();
 
-            //var wait = new WebDriverWait(driver, new TimeSpan(0, 0, 60));
-            //var element = wait.Until(ExpectedConditions.ElementExists((By.Id(Login))));
-
             IWebElement industry = driver.FindElement(By.CssSelector("input[name=\"industry\"]"));
             industry.Click();
 
@@ -118,16 +116,16 @@ namespace HW_13_Selenium
             Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
         }
 
-        [Test, Order(2)] // Try to login
-        public void Login()
+        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(2)] // Try to login
+        public void Login(string loginData, string passData)
         {
             bool resultElementOnPage = true;
             driver.Navigate().GoToUrl("https://newbookmodels.com/auth/signin");
             IWebElement emailField = driver.FindElement(By.CssSelector("input[name=\"email\"]"));
-            emailField.SendKeys(email);
+            emailField.SendKeys(loginData);
 
             IWebElement passwordField = driver.FindElement(By.CssSelector("input[name=\"password\"]"));
-            passwordField.SendKeys(password);
+            passwordField.SendKeys(passData);
 
             IWebElement loginButton = driver.FindElement(By.CssSelector("button[class=\"SignInForm__submitButton--cUdOV Button__button---rQSB Button__themeSealBrown--3arN6 Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
             loginButton.Click();
@@ -148,7 +146,30 @@ namespace HW_13_Selenium
             {
                 resultElementOnPage = false;
             }
+
             Assert.IsTrue(resultElementOnPage);
+        }
+
+        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(3)] // Try to login
+        public void Logout(string loginData, string passData)
+        {
+            Login(loginData, passData);
+
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 60));
+            IWebElement popupWindow = wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"resend-email__root\"]")));
+            popupWindow.Click();
+            action.SendKeys(Keys.Escape).Perform();
+
+            IWebElement avatarIcon = wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"AvatarClient__avatar--3TC7_\"]")));
+            avatarIcon.Click();
+
+            IWebElement logoutLink = driver.FindElement(By.CssSelector("div[class=\"link link_type_logout link_active\"]"));
+            action.MoveToElement(logoutLink).Perform();
+            logoutLink.Click();
+
+            wait.Until(ExpectedConditions.ElementExists(By.CssSelector("button[class=\"SignInForm__submitButton--cUdOV Button__button---rQSB Button__themeSealBrown--3arN6 Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]")));
+            Assert.AreEqual("https://newbookmodels.com/auth/signin", driver.Url);
+            Thread.Sleep(1500);
         }
 
         [TearDown]
