@@ -22,7 +22,6 @@ namespace HW_13_Selenium
         Actions action;
         static string firstname = Generators.GetRandName();
         static string secondname = Generators.GetRandName();
-        static string email = Generators.GetRndEmail();
         static string password = Generators.GetRndPass();
         static string mobile = Generators.GetRndPhone();
         static string companyName = Generators.GetRandName();
@@ -50,9 +49,8 @@ namespace HW_13_Selenium
         }
 
         [Test, Order(1)] // Try to register
-        public void SignUp()
+        public void SignupValid()
         {
-
             driver.Navigate().GoToUrl("https://newbookmodels.com/");
             IWebElement signUpButton = driver.FindElement(By.ClassName("Navbar__signUp--12ZDV"));
             signUpButton.Click();
@@ -60,6 +58,77 @@ namespace HW_13_Selenium
             IWebElement firstNameField = driver.FindElement(By.CssSelector("input[name=\"first_name\"]"));
             firstNameField.SendKeys(firstname);
             
+            IWebElement lastNameField = driver.FindElement(By.CssSelector("input[name=\"last_name\"]"));
+            lastNameField.SendKeys(secondname);
+
+            IWebElement emailField = driver.FindElement(By.CssSelector("input[name=\"email\"]"));
+            emailField.SendKeys(Generators.GetRndEmail());
+
+            IWebElement passwordField = driver.FindElement(By.CssSelector("input[name=\"password\"]"));
+            passwordField.SendKeys(password);
+
+            IWebElement passwordConfirmField = driver.FindElement(By.CssSelector("input[name=\"password_confirm\"]"));
+            passwordConfirmField.SendKeys(password);
+
+            IWebElement mobileField = driver.FindElement(By.CssSelector("input[name=\"phone_number\"]"));
+            mobileField.SendKeys(mobile);
+
+            Thread.Sleep(1000);
+
+            IWebElement NextButton = driver.FindElement(By.CssSelector("button[class=\"SignupForm__submitButton--1m1C2 Button__button---rQSB Button__themePrimary--E5ESP Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
+            NextButton.Click();
+
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 20));
+            wait.Until(ExpectedConditions.ElementExists(By.CssSelector("input[name=\"company_name\"]")));
+
+            Assert.AreEqual("https://newbookmodels.com/join/company", driver.Url);
+
+            IWebElement companyNameField = driver.FindElement(By.CssSelector("input[name=\"company_name\"]"));
+            companyNameField.SendKeys(companyName);
+
+            IWebElement companyUrlField = driver.FindElement(By.CssSelector("input[name=\"company_website\"]"));
+            companyUrlField.SendKeys(companyUrl);
+
+            IWebElement locationField = driver.FindElement(By.CssSelector("input[name=\"location\"]"));
+            locationField.SendKeys("711");
+            Thread.Sleep(1000);
+            wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div[class=\"pac-container pac-logo\"]")));
+            
+            locationField.SendKeys(Keys.ArrowDown);
+            Thread.Sleep(500);
+            locationField.SendKeys(Keys.Enter);
+
+            IWebElement industry = driver.FindElement(By.CssSelector("input[name=\"industry\"]"));
+            industry.Click();
+            Thread.Sleep(500);
+
+            IWebElement chosenIndustry = driver.FindElements(By.ClassName("Select__option--1IbG6"))[Generators.Randomchik.Next(0, 4)];
+            chosenIndustry.Click();
+            Thread.Sleep(2000);
+
+            IWebElement finishButton = driver.FindElement(By.CssSelector("button[class=\"SignupCompanyForm__submitButton--3mz3p Button__button---rQSB Button__themePrimary--E5ESP Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
+            finishButton.Click();
+
+            Thread.Sleep(2000);
+            Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
+        }
+        
+        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb_laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/"), Order(2)] // inValid email
+        [TestCase("", "wrhjkwehj", "jlfunajeb_laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // empty firstName
+        [TestCase("tyrsyys", " dff", "jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // spaces secondName
+        [TestCase("tyrsyys", "", "jlfunajeb@laste.ml", "A1jlfunajeb@las@te.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // @x2 in email
+        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "Ajlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // no numbers in password
+        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "A1jlfunajeblaste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // no special chars in password
+        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // only small chars in passwod
+        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "1Aj lfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // contains spaces in password
+        [TestCase("tyrsyys", "wrhjkwehj", "1lfAb@", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // only 6 chars length of password
+        public void SignupInvalid(string firstname, string secondname, string email, string password, string mobile, string companyName, string companyUrl)
+        { 
+            driver.Navigate().GoToUrl("https://newbookmodels.com/join");
+
+            IWebElement firstNameField = driver.FindElement(By.CssSelector("input[name=\"first_name\"]"));
+            firstNameField.SendKeys(firstname);
+
             IWebElement lastNameField = driver.FindElement(By.CssSelector("input[name=\"last_name\"]"));
             lastNameField.SendKeys(secondname);
 
@@ -80,43 +149,13 @@ namespace HW_13_Selenium
             IWebElement NextButton = driver.FindElement(By.CssSelector("button[class=\"SignupForm__submitButton--1m1C2 Button__button---rQSB Button__themePrimary--E5ESP Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
             NextButton.Click();
 
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-            wait.Until(ExpectedConditions.ElementExists(By.CssSelector("input[name=\"company_name\"]")));
-
-            Assert.AreEqual("https://newbookmodels.com/join/company", driver.Url);
-
-            IWebElement companyNameField = driver.FindElement(By.CssSelector("input[name=\"company_name\"]"));
-            companyNameField.SendKeys(companyName);
-
-            IWebElement companyUrlField = driver.FindElement(By.CssSelector("input[name=\"company_website\"]"));
-            companyUrlField.SendKeys(companyUrl);
-
-            IWebElement locationField = driver.FindElement(By.CssSelector("input[name=\"location\"]"));
-            locationField.SendKeys(companyLocation.ToString());
-            Thread.Sleep(1500); // заменить на отслеживание по€влени€ элемента
-            locationField.SendKeys(Keys.ArrowDown);
-            Thread.Sleep(500);
-            locationField.SendKeys(Keys.Enter);
-
-            IWebElement industry = driver.FindElement(By.CssSelector("input[name=\"industry\"]"));
-            industry.Click();
-            Thread.Sleep(500);
-
-            IWebElement chosenIndustry = driver.FindElements(By.ClassName("Select__option--1IbG6"))[Generators.Randomchik.Next(0, 4)];
-            chosenIndustry.Click();
-
             Thread.Sleep(2000);
 
-            IWebElement finishButton = driver.FindElement(By.CssSelector("button[class=\"SignupCompanyForm__submitButton--3mz3p Button__button---rQSB Button__themePrimary--E5ESP Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
-            finishButton.Click();
-
-            Thread.Sleep(2000);
-
-            Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
+            Assert.AreEqual("https://newbookmodels.com/join", driver.Url);
         }
 
-        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(2)] // Try to login
-        public void Login(string loginData, string passData)
+        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(3)] // Valid data
+        public void LoginValid(string loginData, string passData)
         {
             bool resultElementOnPage = true;
             driver.Navigate().GoToUrl("https://newbookmodels.com/auth/signin");
@@ -128,8 +167,7 @@ namespace HW_13_Selenium
 
             IWebElement loginButton = driver.FindElement(By.CssSelector("button[class=\"SignInForm__submitButton--cUdOV Button__button---rQSB Button__themeSealBrown--3arN6 Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
             loginButton.Click();
-
-            Thread.Sleep(4000);
+            Thread.Sleep(3000);
 
             Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
 
@@ -149,10 +187,44 @@ namespace HW_13_Selenium
             Assert.IsTrue(resultElementOnPage);
         }
 
-        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(3)] // Try to logout
+        [TestCase("invaliddata23728389@laste.ml", "A1jlfunajeb@laste.ml"), Order(4)] // Valid data
+        public void LoginInvalid(string loginData, string passData)
+        {
+            bool failLogin = true;
+            driver.Navigate().GoToUrl("https://newbookmodels.com/auth/signin");
+            IWebElement emailField = driver.FindElement(By.CssSelector("input[name=\"email\"]"));
+            emailField.SendKeys(loginData);
+
+            IWebElement passwordField = driver.FindElement(By.CssSelector("input[name=\"password\"]"));
+            passwordField.SendKeys(passData);
+
+            IWebElement loginButton = driver.FindElement(By.CssSelector("button[class=\"SignInForm__submitButton--cUdOV Button__button---rQSB Button__themeSealBrown--3arN6 Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
+            loginButton.Click();
+
+            Thread.Sleep(2000);
+
+            Assert.AreEqual("https://newbookmodels.com/auth/signin", driver.Url);
+
+            try
+            {
+                driver.FindElements(By.ClassName("FormErrorText__error---nzyq"));
+            }
+            catch (NoSuchElementException)
+            {
+                failLogin = false;
+            }
+            catch (StaleElementReferenceException)
+            {
+                failLogin = false;
+            }
+
+            Assert.IsTrue(failLogin);
+        }
+
+        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(5)] // Try to logout
         public void Logout(string loginData, string passData)
         {
-            Login(loginData, passData);
+            LoginValid(loginData, passData);
 
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 60));
 
@@ -173,11 +245,11 @@ namespace HW_13_Selenium
         }
 
 
-        [Test, Order(4)] // Try to submit credit card
+        [Test, Order(6)] // Try to submit credit card
         public void SubmitCreditCard()
         {
             (string cardNumber, string cardData, string cardCvv) getCard = Generators.GetRndCreditCard();
-            SignUp();
+            SignupValid();
 
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 20));
 
