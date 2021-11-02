@@ -60,5 +60,22 @@ namespace HW_13_Selenium
 
             return phoneNumber;
         }
+
+        public static string GetRndEmail()
+        {
+            var chars = "abcdefghijklmnopqrstuvwxyz";
+            var stringChars = new char[4];
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[Randomchik.Next(chars.Length)];
+            }
+
+            string date = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            var email = new String(stringChars) + date + "@gmail.com";
+
+            return email;
+        }
     }
 }

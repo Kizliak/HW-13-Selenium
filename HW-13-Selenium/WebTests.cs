@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Web.UI.WebControls;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -18,6 +19,14 @@ namespace HW_13_Selenium
     {
         IWebDriver driver;
         Actions action;
+        static string firstname = Generators.GetRandName();
+        static string secondname = Generators.GetRandName();
+        static string email = Generators.GetRndEmail();
+        static string password = Generators.GetRndPass();
+        static string mobile = Generators.GetRndPhone();
+        static string companyName = Generators.GetRandName();
+        static string companyUrl = "https://" + firstname.ToLower() + ".com/";
+        static int companyLocation = Generators.Randomchik.Next(100, 999);
 
         [OneTimeSetUp]
         public void ClearProccesses()
@@ -32,29 +41,16 @@ namespace HW_13_Selenium
         public void Setup()
         {
             ChromeOptions options = new ChromeOptions();
-            //Proxy proxy = new Proxy();
-            //proxy.setHttpProxy("myhttpproxy:3337");
-            //options.setCapability("proxy", proxy);
             options.AddArguments("start-maximized");
 
             driver = new ChromeDriver(options);
             action = new Actions(driver);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-            //driver.Manage().Window.Maximize();
         }
 
-        [Test] // Try to register
+        [Test, Order(1)] // Try to register
         public void SignUp()
         {
-            string firstname = Generators.GetRandName();
-            string secondname = Generators.GetRandName();
-            string email = firstname.ToLower() + secondname.ToLower() + "@gmail.com";
-            string password = Generators.GetRndPass();
-            string mobile = Generators.GetRndPhone();
-            string companyName = Generators.GetRandName();
-            string companyUrl = "https://" + firstname.ToLower() + ".com/";
-            int companyLocation = Generators.Randomchik.Next(100,999);
-
             driver.Navigate().GoToUrl("https://newbookmodels.com/");
             IWebElement signUpButton = driver.FindElement(By.ClassName("Navbar__signUp--12ZDV"));
             signUpButton.Click();
@@ -93,8 +89,8 @@ namespace HW_13_Selenium
             companyUrlField.SendKeys(companyUrl);
 
             IWebElement locationField = driver.FindElement(By.CssSelector("input[name=\"location\"]"));
-            locationField.SendKeys(companyLocation.ToString() + Keys.ArrowDown + Keys.Enter);
-            Thread.Sleep(1500);
+            locationField.SendKeys(companyLocation.ToString());
+            Thread.Sleep(1500); // заменить на отслеживание по€влени€ элемента
             locationField.SendKeys(Keys.ArrowDown);
             Thread.Sleep(500);
             locationField.SendKeys(Keys.Enter);
@@ -102,6 +98,9 @@ namespace HW_13_Selenium
             //IWebElement addressDropDownItem = driver.FindElement(By.CssSelector("div[class=\"pac-item\"]"));
             //action.MoveToElement(addressDropDownItem);
             //action.Perform();
+
+            //var wait = new WebDriverWait(driver, new TimeSpan(0, 0, 60));
+            //var element = wait.Until(ExpectedConditions.ElementExists((By.Id(Login))));
 
             IWebElement industry = driver.FindElement(By.CssSelector("input[name=\"industry\"]"));
             industry.Click();
@@ -117,6 +116,39 @@ namespace HW_13_Selenium
             Thread.Sleep(4000);
 
             Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
+        }
+
+        [Test, Order(2)] // Try to login
+        public void Login()
+        {
+            bool resultElementOnPage = true;
+            driver.Navigate().GoToUrl("https://newbookmodels.com/auth/signin");
+            IWebElement emailField = driver.FindElement(By.CssSelector("input[name=\"email\"]"));
+            emailField.SendKeys(email);
+
+            IWebElement passwordField = driver.FindElement(By.CssSelector("input[name=\"password\"]"));
+            passwordField.SendKeys(password);
+
+            IWebElement loginButton = driver.FindElement(By.CssSelector("button[class=\"SignInForm__submitButton--cUdOV Button__button---rQSB Button__themeSealBrown--3arN6 Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
+            loginButton.Click();
+
+            Thread.Sleep(4000);
+
+            Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
+
+            try
+            {
+                driver.FindElement(By.ClassName("AvatarClient__avatar--3TC7_"));
+            }
+            catch (NoSuchElementException)
+            {
+                resultElementOnPage = false;
+            }
+            catch (StaleElementReferenceException)
+            {
+                resultElementOnPage = false;
+            }
+            Assert.IsTrue(resultElementOnPage);
         }
 
         [TearDown]
