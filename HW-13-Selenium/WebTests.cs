@@ -52,6 +52,7 @@ namespace HW_13_Selenium
         [Test, Order(1)] // Try to register
         public void SignUp()
         {
+
             driver.Navigate().GoToUrl("https://newbookmodels.com/");
             IWebElement signUpButton = driver.FindElement(By.ClassName("Navbar__signUp--12ZDV"));
             signUpButton.Click();
@@ -74,12 +75,13 @@ namespace HW_13_Selenium
             IWebElement mobileField = driver.FindElement(By.CssSelector("input[name=\"phone_number\"]"));
             mobileField.SendKeys(mobile);
 
-            Thread.Sleep(4000);
+            Thread.Sleep(1000);
 
             IWebElement NextButton = driver.FindElement(By.CssSelector("button[class=\"SignupForm__submitButton--1m1C2 Button__button---rQSB Button__themePrimary--E5ESP Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
             NextButton.Click();
 
-            Thread.Sleep(4000);
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
+            wait.Until(ExpectedConditions.ElementExists(By.CssSelector("input[name=\"company_name\"]")));
 
             Assert.AreEqual("https://newbookmodels.com/join/company", driver.Url);
 
@@ -96,22 +98,19 @@ namespace HW_13_Selenium
             Thread.Sleep(500);
             locationField.SendKeys(Keys.Enter);
 
-            //IWebElement addressDropDownItem = driver.FindElement(By.CssSelector("div[class=\"pac-item\"]"));
-            //action.MoveToElement(addressDropDownItem);
-            //action.Perform();
-
             IWebElement industry = driver.FindElement(By.CssSelector("input[name=\"industry\"]"));
             industry.Click();
+            Thread.Sleep(500);
 
             IWebElement chosenIndustry = driver.FindElements(By.ClassName("Select__option--1IbG6"))[Generators.Randomchik.Next(0, 4)];
             chosenIndustry.Click();
 
-            Thread.Sleep(4000);
+            Thread.Sleep(2000);
 
             IWebElement finishButton = driver.FindElement(By.CssSelector("button[class=\"SignupCompanyForm__submitButton--3mz3p Button__button---rQSB Button__themePrimary--E5ESP Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]"));
             finishButton.Click();
 
-            Thread.Sleep(4000);
+            Thread.Sleep(2000);
 
             Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
         }
@@ -150,12 +149,13 @@ namespace HW_13_Selenium
             Assert.IsTrue(resultElementOnPage);
         }
 
-        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(3)] // Try to login
+        [TestCase("jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml"), Order(3)] // Try to logout
         public void Logout(string loginData, string passData)
         {
             Login(loginData, passData);
 
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 60));
+
             IWebElement popupWindow = wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"resend-email__root\"]")));
             popupWindow.Click();
             action.SendKeys(Keys.Escape).Perform();
@@ -170,6 +170,58 @@ namespace HW_13_Selenium
             wait.Until(ExpectedConditions.ElementExists(By.CssSelector("button[class=\"SignInForm__submitButton--cUdOV Button__button---rQSB Button__themeSealBrown--3arN6 Button__sizeMedium--uLCYD Button__fontSmall--1EPi5 Button__withTranslate--1qGAH\"]")));
             Assert.AreEqual("https://newbookmodels.com/auth/signin", driver.Url);
             Thread.Sleep(1500);
+        }
+
+
+        [Test, Order(4)] // Try to submit credit card
+        public void SubmitCreditCard()
+        {
+            (string cardNumber, string cardData, string cardCvv) getCard = Generators.GetRndCreditCard();
+            SignUp();
+
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 20));
+
+            IWebElement avatarIcon = wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"AvatarClient__avatar--3TC7_\"]")));
+            avatarIcon.Click();
+            wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"header header_type_page\"]")));
+
+            IWebElement creditCardHolderName = driver.FindElement(By.CssSelector("input[placeholder=\"Full name\"]"));
+            action.MoveToElement(creditCardHolderName).Perform();
+            action.SendKeys(Keys.PageDown).Perform();
+            creditCardHolderName.SendKeys(firstname + " " + secondname);
+
+            driver.SwitchTo().Frame(driver.FindElement(By.CssSelector("iframe[title=\"Secure card payment input frame\"]")));
+
+            IWebElement creditCardNumber = driver.FindElement(By.CssSelector("input[name=\"cardnumber\"]"));
+            creditCardNumber.SendKeys(getCard.cardNumber);
+
+            IWebElement creditCardDate = driver.FindElement(By.CssSelector("input[name=\"exp-date\"]"));
+            creditCardDate.SendKeys(getCard.cardData);
+
+            IWebElement creditCardCvv = driver.FindElement(By.CssSelector("input[name=\"cvc\"]"));
+            creditCardCvv.SendKeys(getCard.cardCvv);
+            creditCardNumber.SendKeys(Keys.Enter);
+
+            driver.SwitchTo().DefaultContent();
+
+            IWebElement popupWindow = wait.Until(ExpectedConditions.ElementExists(By.CssSelector("div[class=\"resend-email__root\"]")));
+            popupWindow.Click();
+            action.SendKeys(Keys.Escape).Perform();
+
+            wait.Until(ExpectedConditions.ElementExists(By.CssSelector("common-input[class=\"stripe-card-view__cvv ng-untouched ng-pristine\"]")));
+            var submitButtons = driver.FindElements(By.CssSelector("button[class=\"button button_type_default\""));
+            bool cardAdded = false;
+
+            foreach (IWebElement button in submitButtons)
+            {
+                if (button.Text.Contains("Save Changes"))
+                {
+                    cardAdded = true;
+                }
+            }
+
+            Thread.Sleep(1500);
+            Assert.IsTrue(cardAdded);
         }
 
         [TearDown]

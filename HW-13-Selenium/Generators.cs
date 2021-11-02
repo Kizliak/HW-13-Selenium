@@ -77,5 +77,17 @@ namespace HW_13_Selenium
 
             return email;
         }
+
+        public static (string cardNumber, string cardData, string cardCvv) GetRndCreditCard()
+        {
+            Random rnd = new Random();
+            List<string> cards = new List<string>() { "4605396609356244", "4485954940959186", "4038797119537982", "4532151451188015", "4556840461075441", "4532226166467670", "4916348528865577" };
+            int cardNumber = rnd.Next(0, cards.Count()-1);
+            int cvv = rnd.Next(100, 999);
+            int expMonth = rnd.Next(1, 12);
+            int expYear = rnd.Next(22, 27);
+
+            return (cards[cardNumber], expMonth.ToString() + expYear.ToString(), cvv.ToString());
+        }
     }
 }
