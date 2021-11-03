@@ -90,8 +90,8 @@ namespace HW_13_Selenium
             companyUrlField.SendKeys(companyUrl);
 
             IWebElement locationField = driver.FindElement(By.CssSelector("input[name=\"location\"]"));
-            locationField.SendKeys("711");
-            Thread.Sleep(1000);
+            locationField.SendKeys("123");
+            Thread.Sleep(1500);
             wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div[class=\"pac-container pac-logo\"]")));
             
             locationField.SendKeys(Keys.ArrowDown);
@@ -113,15 +113,15 @@ namespace HW_13_Selenium
             Assert.AreEqual("https://newbookmodels.com/explore", driver.Url);
         }
         
-        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb_laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/"), Order(2)] // inValid email
-        [TestCase("", "wrhjkwehj", "jlfunajeb_laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // empty firstName
-        [TestCase("tyrsyys", " dff", "jlfunajeb@laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // spaces secondName
-        [TestCase("tyrsyys", "", "jlfunajeb@laste.ml", "A1jlfunajeb@las@te.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // @x2 in email
-        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "Ajlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // no numbers in password
-        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "A1jlfunajeblaste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // no special chars in password
-        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // only small chars in passwod
-        [TestCase("tyrsyys", "wrhjkwehj", "jlfunajeb@laste.ml", "1Aj lfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // contains spaces in password
-        [TestCase("tyrsyys", "wrhjkwehj", "1lfAb@", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // only 6 chars length of password
+        [TestCase("tyrsyys", "wrhjkwehj", "fakejlfunajeb_laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/"), Order(2)] // inValid email no @
+        [TestCase("", "wrhjkwehj", "fakejlfunajeb_laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // empty firstName
+        [TestCase("tyrsyys", " dff", "fakejlfunajeb@laste.ml", "A1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // spaces secondName
+        [TestCase("tyrsyys", "", "fakejlfunajeb@laste.ml", "A1jlfunajeb@las@te.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // @x2 in email
+        [TestCase("tyrsyys", "wrhjkwehj", "fakejlfunajeb@laste.ml", "Ajlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // no numbers in password
+        [TestCase("tyrsyys", "wrhjkwehj", "fakejlfunajeb@laste.ml", "A1jlfunajeblaste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // no special chars in password
+        [TestCase("tyrsyys", "wrhjkwehj", "fakejlfunajeb@laste.ml", "1jlfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // only small chars in passwod
+        [TestCase("tyrsyys", "wrhjkwehj", "fakejlfunajeb@laste.ml", "1Aj lfunajeb@laste.ml", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // contains spaces in password
+        [TestCase("tyrsyys", "wrhjkwehj", "fakeA1jlfunajeb@laste.ml", "1lfAb@", "1634543545", "dsfdsfsff", "http://dfdfdfd.com/")] // only 6 chars length of password
         public void SignupInvalid(string firstname, string secondname, string email, string password, string mobile, string companyName, string companyUrl)
         { 
             driver.Navigate().GoToUrl("https://newbookmodels.com/join");
